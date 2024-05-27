@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Medical Record</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Add Medical Record</h2>
+        <form action="{{ url_for('add_patient') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="birthday">Patient Birthday</label>
+                <input type="date" class="form-control" id="birthday" name="birthday" required>
+            </div>
+            <div class="form-group">
+                <label for="record_date">Record Date</label>
+                <input type="date" class="form-control" id="record_date" name="record_date" required>
+            </div>
+            <div class="form-group">
+                <label for="complaints">Complaints</label>
+                <textarea class="form-control" id="complaints" name="complaints" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="history">History</label>
+                <textarea class="form-control" id="history" name="history" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="diagnosed">Diagnosed</label>
+                <textarea class="form-control" id="diagnosed" name="diagnosed" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="treatment">Treatment</label>
+                <textarea class="form-control" id="treatment" name="treatment" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="next_review">Next Review</label>
+                <input type="date" class="form-control" id="next_review" name="next_review" required>
+            </div>
+            <div class="form-group">
+                <label for="photo">Photo</label>
+                <input type="file" class="form-control-file" id="photo" name="photo" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Add Patient</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

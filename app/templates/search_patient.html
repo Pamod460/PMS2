@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Search Patient{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Search Patient by Birthday</h2>
+<form id="searchForm" method="POST" onsubmit="return false">
+    <div class="form-group">
+        <label for="birthday">Birthday:</label>
+        <input id="txtSearch" type="date" class="form-control" id="birthday" name="birthday" required>
+    </div>
+</form>
+<h2 class="text-center">Search Results</h2>
+<div id="results"></div>
+
+<script>
+    $(document).ready(function () {
+        // $('#searchForm').on('submit', function (event) {
+        //     event.preventDefault(); // Prevent default form submission
+        // });
+        $('#txtSearch').on('input', function () {
+            
+            $.ajax({
+                url: "{{ url_for('search_patient') }}",
+                method: "POST",
+                data: $("#searchForm").serialize(),
+                dataType: "json",
+                success: function (response) {
+
+                    console.log(response.patients);
+                    var results = $('#results');
+                    results.empty(); // Clear previous results
+
+                    if (response.patients && response.patients.length > 0) {
+                        var table = $('<table class="table table-striped"></table>');
+                        var thead = $('<thead><tr><th>ID</th><th>Name</th><th>Birthday</th><th>Action</th></tr></thead>');
+                        table.append(thead);
+
+                        var tbody = $('<tbody></tbody>');
+                        response.patients.forEach(function(patient) {
+                      console.log(patient[0]);
+                      var row = $('<tr></tr>');
+                            row.append('<td>' + patient[0] + '</td>');
+                            row.append('<td>' + patient[1] + '</td>');
+                            row.append('<td>' + patient[2] + '</td>');
+                            row.append('<td><button type="button" class="btn btn-success btnAddRepo" data-patient-id="' + patient[0] + '">Add Record</button></td>');                            tbody.append(row);
+                        });
+                        table.append(tbody);
+                        results.append(table);
+                    } else {
+                        results.append('<p>No patients found with that birthday.</p>');
+                    }
+                }
+                ,
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    // alert('An error occurred while processing your request. Please try again.');
+                }
+
+            })
+        })
+
+        $(document).on('click', '.btnAddRepo', function() {
+            var patientId = $(this).data('patient-id');
+            window.location.href = "add_record/" + patientId;
+        });
+ 
+    });
+</script>
+
+{% endblock %}

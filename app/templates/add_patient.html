@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Add Patient{% endblock %}
+
+{% block content %}
+<style type="text/css">
+     
+        .form-control.valid {
+            background-color: rgba(76, 175, 80, 0.1); /* Lighter green */
+        }
+        .form-control.invalid {
+            background-color: rgba(244, 67, 54, 0.1); /* Lighter red */
+        }
+</style>
+<h2 class="text-center">Add Patient</h2>
+<form id="patient-form" style="width: 700px; height: 500px;" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-6"><label id="message"></label>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="birthday">Birthday:</label>
+                <input type="date" class="form-control" id="birthday" name="birthday" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" class="form-control" id="age" name="age" >
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select class="form-control" id="gender" name="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact : </label> <span id="phone-validation-message"></span>
+                <input type="text" class="form-control" id="contact" name="contact" required>
+                
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="photo">Photo</label>
+                <div id="my_camera"></div>
+                <br />
+                <input type="button" value="Take Snapshot" onClick="take_snapshot()">
+                <input type="button" value="Retake Snapshot" onClick="retake_snapshot()">
+
+                <input type="hidden" name="photo" class="image-tag">
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-block" onclick="submitForm()">Add Patient</button>
+</form>
+
+<script language="JavaScript">
+    Webcam.set({
+        width: 320,
+        height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90
+    });
+
+    Webcam.attach('#my_camera');
+
+    function take_snapshot() {
+        Webcam.snap(function (data_uri) {
+            document.querySelector('.image-tag').value = data_uri;
+            document.getElementById('my_camera').innerHTML = '<img src="' + data_uri + '"/>';
+        });
+
+    }
+   function retake_snapshot(){
+    document.getElementById('my_camera').innerHTML = '';
+    Webcam.attach('#my_camera');
+
+   }
+    $().ready(function () {
+        $('#birthday').on('input', function () {
+            var today = new Date();
+            var birthDate = new Date(this.value);
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            $('#age').val(age);
+        })
+        $('#contact').on('input', function() {
+                var phoneNumber = $(this).val();
+                var formGroup = $(this).closest('.form-control:focus');
+                if (phoneNumber === "") {
+                    // Clear styles and validation message if the input is empty
+                    formGroup.removeClass('valid invalid');
+                    $('#phone-validation-message').text('');
+                } else {
+
+                $.ajax({
+                    url: '/validate_phone',
+                    type: 'POST',
+                    data: { phone_number: phoneNumber },
+                    success: function(response) {
+                        if (response.valid) {
+                            $('#phone-validation-message').text('Valid phone number').css('color', 'green');
+                            formGroup.removeClass('invalid').addClass('valid');
+                        } else {
+                            $('#phone-validation-message').text('Invalid phone number').css('color', 'red');
+                            formGroup.removeClass('valid').addClass('invalid');
+                        }
+                    }
+                });}
+            });
+    }
+    );
+    function submitForm() {
+        var formData = new FormData(document.getElementById('patient-form'));
+
+        $.ajax({
+            url: "{{ url_for('add_patient') }}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (response) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+</script>
+{% endblock %}
